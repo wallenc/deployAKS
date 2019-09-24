@@ -395,3 +395,6 @@ curl -v https://demo.azure.com
         </div>
     </body>
     * Connection #0 to host demo.azure.com left intact
+    
+### References
+[Create an HTTPS ingress controller and use your own TLS certificates on Azure Kubernetes Service (AKS](https://docs.microsoft.com/en-us/azure/aks/ingress-own-tls)
