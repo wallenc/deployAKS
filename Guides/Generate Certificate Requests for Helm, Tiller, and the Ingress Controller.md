@@ -3,7 +3,7 @@ The steps below will guide you through the process of requesting certificates fo
 
 There are two options for requesting and then exporting the certificates:
 <ol>
-<li>[Use Powershell](#Powershell)
+<li>[Use Powershell](#powershell)
 
 
 # Powershell
