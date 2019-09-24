@@ -142,7 +142,7 @@ Use the installation guide from [Helm](https://helm.sh/docs/using_helm/#installi
     $ PATH="/usr/local/bin/helm:$PATH"
 
 ## Generate certificates for Helm, Tiller, and the ingress controller
-Use this [guide](Generate-Certificate-Requests-for-Helm-Tiller-and-the-Ingress-Controller.md) to generate the certificate requests and export with a private key
+Use this [guide](/guides/Generate-Certificate-Requests-for-Helm-Tiller-and-the-Ingress-Controller.md) to generate the certificate requests and export with a private key
 
 Once the certificates have been created, copy them to a directory on your Linux host.
 
