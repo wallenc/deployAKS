@@ -177,13 +177,13 @@ demoazurecom.crt<br/>
 demoazurecom.key<br/>  
 demoazurecom.nopass.key<br/>  
 <br/>
-helm.crt  
-helm.key  
-helm.nopass.key
-
-tiller.crt  
-tiller.key
-tiller.nopass.key
+helm.crt<br/>  
+helm.key<br/>  
+helm.nopass.key<br/>
+<br/>
+tiller.crt<br/>  
+tiller.key<br/>
+tiller.nopass.key<br/>
 </b>
 
 ## Create a custom Tiller installation using TLS certificates
