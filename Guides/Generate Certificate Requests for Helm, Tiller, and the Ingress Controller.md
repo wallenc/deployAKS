@@ -3,8 +3,8 @@ The steps below will guide you through the process of requesting certificates fo
 
 There are two options for requesting and then exporting the certificates:
 
-[Use Powershell to automate the process](#powershell)
-[Manually perform the steps](#manual-cert-generation)
+- [Use Powershell to automate the process](#powershell)  
+- [Manually perform the steps](#manual-cert-generation)
 
 # Powershell
 In order to automate the certificate request, you'll need to copy [New-AKSCertificateRequest.ps1](https://github.com/wallenc/deployAKS/blob/master/Scripts/New-AKSCertificateRequest.ps1) to the Windows machine from where you'll be submitting the certificate requests.
