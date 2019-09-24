@@ -2,8 +2,8 @@
 The steps below will guide you through the process of requesting certificates for Helm, Tiller, and the ingress controller from a Windows CA. These steps should be performed on a Windows server that is located in the same domain as your Certificate Authority.
 
 There are two options for requesting and then exporting the certificates:
-<ol>
-<li>[Use Powershell](https://github.com/wallenc/deployAKS/blob/master/Guides/Generate%20Certificate%20Requests%20for%20Helm,%20Tiller,%20and%20the%20Ingress%20Controller.md#powershell)
+
+[Use Powershell](#powershell)
 
 
 # Powershell
