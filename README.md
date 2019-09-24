@@ -142,14 +142,22 @@ Use the installation guide from [Helm](https://helm.sh/docs/using_helm/#installi
     $ PATH="/usr/local/bin/helm:$PATH"
 
 ## Generate certificates for Helm, Tiller, and the ingress controller
-Use this [guide](/guides/Generate-Certificate-Requests-for-Helm-Tiller-and-the-Ingress-Controller.md) to generate the certificate requests and export with a private key
+Use this [guide](https://github.com/wallenc/deployAKS/blob/master/Guides/Generate%20Certificate%20Requests%20for%20Helm%2C%20Tiller%2C%20and%20the%20Ingress%20Controller.md) to generate the certificate requests and export with a private key
 
 Once the certificates have been created, copy them to a directory on your Linux host.
 
 ## Convert the pfx files to .cer and .key files
-The following steps will walk you through converting the PFX files to .crt and .key files so they are readable by Linux. 
+The following steps will walk you through converting the PFX files to .crt and .key format which is required for Linux. You can either run these commands manually from the command line or convert the certificates using a bash script.
 
-You can either run these commands manually from the command line or convert the certificates using the bash script from my [GitHub](https://github.com/wallenc/deployAKS/blob/master/Scripts/convertCertificates.sh)
+#### Using the bash script to convert the certificates
+Copy [convertCertificates.sh](https://github.com/wallenc/deployAKS/blob/master/Scripts/convertCertificates.sh) to your Linux host. 
+
+Mark the script as executable
+    $ chmod u+x convertCertificates.sh
+
+Run the script, using the following as an example. Make sure to replace the --cert-path, --out-path, and --pfx-password with values relevant to your scenario
+
+    $ ./convertCertificates.sh --cert-path ~/certs --root-cert ~/rootCert.cer  --out-path ~/certs/converted --pfx-password PASSWORD
 
 #### To manually convert the certificates run the below commands for each cert. Replace \<cert-name> with the name of the certificate to convert, and replace "PASSWORD" with the password used when exporting the certificate.
     
@@ -162,11 +170,10 @@ You can either run these commands manually from the command line or convert the 
 ##### Convert the root certifcate to PEM format
     openssl x509 -inform der -in rootCA.cer -out rootCA.pem
 
-#### Using a bash script to convert the certificates
-See this [guide]()
 
 ### You should now have the following files:
 
+<b>
 \<ingress-cert-name>.crt  
 \<ingress-cert-name>.key  
 \<ingress-cert-name>.nopass.key
@@ -178,7 +185,7 @@ helm.nopass.key
 tiller.crt  
 tiller.key
 tiller.nopass.key
-
+</b>
 
 ## Create a custom Tiller installation using TLS certificates
 
