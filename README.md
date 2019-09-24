@@ -4,15 +4,15 @@ This article walks through the deployment of an NGINX ingress controller with SS
 
 ### At a high level this guide walks through the following
 
-- Create a service principal with a limited scope
-- Deploy AKS using an already existing VNET/subnet
-- Secure Helm and Tiller with Windows CA issued certificates
+- Creating a service principal with a limited scope
+- Deploying AKS using an already existing VNET/subnet
+- Securing Helm and Tiller with Windows CA issued certificates
 - Creating an internal load balancer
 - Creating the ingress controller using private IPs and SSL termination
-- Deploy a demo application
-- Add an ingress route for the application
-- Configur a remote system to trust the CA certificate chain
-- Test the demo application using curl with certificate validation
+- Deploying a demo application
+- Adding an ingress route for the application
+- Configuring a remote system to trust the CA certificate chain
+- Testing the demo application using curl with certificate validation
 
 # Prerequisites
 [Azure CLI for Linux](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest)
