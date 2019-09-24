@@ -29,7 +29,7 @@ An Azure service principal is an identity created for use with applications, hos
 
 In the example below, the scope of the service principal is limited to only the two resource groups to which it requires access. The first scope is for the resource group where the AKS cluster will be deployed. The second is for the resource group that contains the virtual network and subnet that will be used for the cluster resources:
 
-    az ad sp create-for-rbac -n AKS_SP --role contributor \
+    $ az ad sp create-for-rbac -n AKS_SP --role contributor \
         --scopes /subscriptions/061f5e92-edf2-4389-8357-a16f71a2cbf3/resourceGroups/AKS-DEMO-RG \
                 /subscriptions/061f5e92-edf2-4389-8357-a16f71a2cbf3/resourceGroups/AKS-VNET-RG
 
@@ -161,22 +161,23 @@ Run the script, using the following as an example. Make sure to replace the --ce
 
 #### To manually convert the certificates run the below commands for each cert. Replace \<cert-name> with the name of the certificate to convert, and replace "PASSWORD" with the password used when exporting the certificate.
     
-    openssl pkcs12 -clcerts -nokeys -in <cert-name>.pfx -out <cert-name>.crt" -password pass:PASSWORD -passin pass:PASSWORD
+    $ openssl pkcs12 -clcerts -nokeys -in <cert-name>.pfx -out <cert-name>.crt" -password pass:PASSWORD -passin pass:PASSWORD
 
-    openssl pkcs12 -nocerts -in <cert-name>.pfx -out <cert-name>.key -password pass:PASSWORD -passin pass:PASSWORD -passout pass:PASSWORD
+    $ openssl pkcs12 -nocerts -in <cert-name>.pfx -out <cert-name>.key -password pass:PASSWORD -passin pass:PASSWORD -passout pass:PASSWORD
 
-    openssl rsa -in <cert-name>.key -out <cert-name>.nopass.key" -passin pass:PASSWORD
+    $ openssl rsa -in <cert-name>.key -out <cert-name>.nopass.key" -passin pass:PASSWORD
 
-##### Convert the root certifcate to PEM format
-    openssl x509 -inform der -in rootCA.cer -out rootCA.pem
+Convert the root certifcate to PEM format
+    
+    $ openssl x509 -inform der -in rootCA.cer -out rootCA.crt
 
 
 ### You should now have the following files:
 
 <b>
-ingress-cert-name.crt  
-ingress-cert-name.key  
-ingress-cert-name.nopass.key
+demoazurecom.crt  
+demoazurecom.key  
+demoazurecom.nopass.key
 
 helm.crt  
 helm.key  
@@ -191,7 +192,7 @@ tiller.nopass.key
 
 To create the Tiller installation we use the `helm init` command. In the below example we provide the TLS certificates that were generated in the previous section.
 
-     helm init --tiller-tls --tiller-tls-cert ~/tiller.crt --tiller-tls-key ~/tiller.nopass.key --tiller-tls-verify --tls-ca-cert ~/rootCA.pem
+     $ helm init --tiller-tls --tiller-tls-cert ~/tiller.crt --tiller-tls-key ~/tiller.nopass.key --tiller-tls-verify --tls-ca-cert ~/rootCA.pem
 
 ### Add the Tiller service account and create the RBAC role
 
@@ -206,11 +207,11 @@ To create the Tiller installation we use the `helm init` command. In the below e
 
 #### Reinitialize the service account
 
-    helm init --service-account tiller --upgrade
+    $ helm init --service-account tiller --upgrade
 
 #### Ensure the Tiller pod is ready with the `kubectl get pods` command
 
-    kubectl get pods -n kube-system
+    $ kubectl get pods -n kube-system
 
 You should now see the tiller pod in a running status
 
@@ -223,8 +224,8 @@ You should now see the tiller pod in a running status
 
 Copy the Helm certificate and key to ~/.helm
 
-    cp helm.crt ~/.helm/cert.pem
-    cp helm.nopass.key ~/.helm/key.pem
+    $ cp helm.crt ~/.helm/cert.pem
+    $ cp helm.nopass.key ~/.helm/key.pem
 
 Test the Helm connectivity to Tiller using the `--tls` flag
   
