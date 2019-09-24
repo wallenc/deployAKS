@@ -173,8 +173,8 @@ Convert the root certifcate to PEM format
 ### You should now have the following files:
 
 <b>
-demoazurecom.crt    
-demoazurecom.key    
+demoazurecom.crt  
+demoazurecom.key  
 demoazurecom.nopass.key  
 
 helm.crt  
