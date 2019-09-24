@@ -172,19 +172,18 @@ Convert the root certifcate to PEM format
 
 ### You should now have the following files:
 
-<b>
-demoazurecom.crt<br/>  
-demoazurecom.key<br/>  
-demoazurecom.nopass.key<br/>  
+- demoazurecom.crt
+- demoazurecom.key
+- demoazurecom.nopass.key
 <br/>
-helm.crt<br/>  
-helm.key<br/>  
-helm.nopass.key<br/>
+- helm.crt
+- helm.key
+- helm.nopass.key
 <br/>
-tiller.crt<br/>  
-tiller.key<br/>
-tiller.nopass.key<br/>
-</b>
+- tiller.crt
+- tiller.key
+- tiller.nopass.key
+
 
 ## Create a custom Tiller installation using TLS certificates
 
