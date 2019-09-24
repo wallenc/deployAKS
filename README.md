@@ -49,7 +49,7 @@ The following steps walk through the process of creating the AKS cluster and con
 
 In the below examples, replace the parameters with values that suit your environment. Using the default settings for the network configuration creates a subnet with a /8 CIDR range. As this may be too large for your environment or overlap with an existing VNET, you can configure the cluster to use an already existing subnet. This example shows that configuration. If you would like to use the default settings, simply leave off the `--vnet-subnet-id parameter`. The Service Principal and Client Secret parameters should match the appId and password from the output of the sp create command above.
 
-    az aks create --resource-group AKS-DEMO-RG --name demoAKSCluster --service-principal "ecca5e35-df9d-4c6a-b025-1f3035bf8213" --client-secret "dfd1c6e7-1660-4c2e-a4da-b5ba8b5b19a3" --vnet-subnet-id "/subscriptions/061f5e92-edf2-4389-8357-a16f71a2cbf3/resourceGroups/AKS-VNET-RG/providers/Microsoft.Network/virtualNetworks/AKS-DEMO-VNET/subnets/S-1" --generate-ssh-keys
+    az aks create --resource-group AKS-DEMO-RG --name demoAKSCluster --service-principal "b2abba9c-ef9a-4a0e-8d8b-46d8b53d046b" --client-secret "2a30869c-388e-40cf-8f5f-8d99fea405bf" --vnet-subnet-id "/subscriptions/061f5e92-edf2-4389-8357-a16f71a2cbf3/resourceGroups/AKS-VNET-RG/providers/Microsoft.Network/virtualNetworks/AKS-DEMO-VNET/subnets/S-1" --generate-ssh-keys
 
 When the above command completes, you should see output that resembles the following
 
@@ -236,7 +236,7 @@ The first step is to create a manifest file which will be used for the load bala
 
     controller:
       service:
-        loadBalancerIP: 10.25.0.25
+        loadBalancerIP: 10.240.0.42
         annotations:
           service.beta.kubernetes.io/azure-load-balancer-internal: "true"
 
@@ -258,10 +258,6 @@ Deploy the ingress controller
 Now deploy the nginx-ingress chart with Helm. To use the manifest file created in the previous step, add the `-f internal-ingress.yaml` parameter. For added redundancy, two replicas of the NGINX ingress controllers are deployed with the `--set controller.replicaCount` parameter. To fully benefit from running replicas of the ingress controller, make sure there's more than one node in your AKS cluster.
 
 The ingress controller also needs to be scheduled on a Linux node. Windows Server nodes (currently in preview in AKS) shouldn't run the ingress controller. A node selector is specified using the `--set nodeSelector` parameter to tell the Kubernetes scheduler to run the NGINX ingress controller on a Linux-based node. Also, the `--tls` parameter must be added as Helm/Tiller now uses TLS authentication.
-
-> The following example creates a Kubernetes namespace for the ingress resources named ingress-demo. Specify a namespace for your own environment as needed. If your AKS cluster is not RBAC enabled, add `--set rbac.create=false` to the Helm commands.
-
-> If you would like to enable client source IP preservation for requests to containers in your cluster, add `--set controller.service.externalTrafficPolicy=Local` to the Helm install command. The client source IP is stored in the request header under X-Forwarded-For. When using an ingress controller with client source IP preservation enabled, SSL pass-through will not work.
 
     $ helm install --name demo stable/nginx-ingress \
         --namespace ingress-demo \
