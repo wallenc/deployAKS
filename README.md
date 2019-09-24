@@ -1,4 +1,4 @@
-# Create an AKS cluster with an HTTPS ingress-controller using only private IPs and certificates issued by an internal CA
+# Create an AKS cluster with an HTTPS ingress-controller using only private IPs and certificates issued by a Windows CA
 
 An ingress controller is a piece of software that provides reverse proxy, configurable traffic routing, and TLS termination for Kubernetes services. Kubernetes ingress resources are used to configure the ingress rules and routes for individual Kubernetes services. Using an ingress controller and ingress rules, a single IP address can be used to route traffic to multiple services in a Kubernetes cluster.
 
