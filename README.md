@@ -175,11 +175,11 @@ Convert the root certifcate to PEM format
 - demoazurecom.crt
 - demoazurecom.key
 - demoazurecom.nopass.key
-<br/>
+
 - helm.crt
 - helm.key
 - helm.nopass.key
-<br/>
+
 - tiller.crt
 - tiller.key
 - tiller.nopass.key
