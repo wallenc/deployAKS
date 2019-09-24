@@ -3,7 +3,7 @@ The steps below will guide you through the process of requesting certificates fo
 
 There are two options for requesting and then exporting the certificates:
 <ol>
-<li>[Use Powershell](#powershell)
+<li>[Use Powershell](https://github.com/wallenc/deployAKS/blob/master/Guides/Generate%20Certificate%20Requests%20for%20Helm,%20Tiller,%20and%20the%20Ingress%20Controller.md#powershell)
 
 
 # Powershell
