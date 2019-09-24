@@ -3,8 +3,8 @@ The steps below will guide you through the process of requesting certificates fo
 
 There are two options for requesting and then exporting the certificates:
 
-[Use Powershell](#powershell)
-
+[Use Powershell to automate the process](#powershell)
+[Manually perform the steps](#manual-cert-generation)
 
 # Powershell
 In order to automate the certificate request, you'll need to copy [New-AKSCertificateRequest.ps1](https://github.com/wallenc/deployAKS/blob/master/Scripts/New-AKSCertificateRequest.ps1) to the Windows machine from where you'll be submitting the certificate requests.
@@ -20,7 +20,7 @@ Example:
 
 The resulting output directory will contain an .rsp, .req, .cer, and .pfx for Helm, Tiller, and your application fqdn. Additionally, the Trusted Root CA certificate will be exported and labeled rootCA.cer. You can safely delete all of the files except the .pfx and rootCA.cer.
 
-## Manually generate certificate requests
+## Manual cert generation
 Use this process if you prefer not to use Powershell to generate the requests as outlined in the previous section
 
 #### Create an INF file that contains the information for the Tiller certificate
