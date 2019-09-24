@@ -4,10 +4,10 @@ The steps below will guide you through the process of requesting certificates fo
 There are two options for requesting and then exporting the certificates:
 
 - [Use Powershell to automate the process](#powershell)  
-- [Manually perform the steps](#manual-cert-generation)
+- [Manually performing the steps](#manual-cert-generation)
 
 # Powershell
-In order to automate the certificate request, you'll need to copy [New-AKSCertificateRequest.ps1](https://github.com/wallenc/deployAKS/blob/master/Scripts/New-AKSCertificateRequest.ps1) to the Windows machine from where you'll be submitting the certificate requests.
+In order to automate the certificate request, you'll need to copy [New-AKSCertificateRequest.ps1](https://github.com/wallenc/deployAKS/blob/master/Scripts/New-AKSCertificateRequest.ps1) to the Windows machine from where you'll be submitting the requests.
 
 Run the script with the following parameters
 - webServerCertTemplateName - The name used for the web server certificate template
@@ -18,7 +18,7 @@ Example:
 
     New-AKSCertificateRequest.ps1 -webServerCertTemplateName webserver -certOutPath C:\Temp\Certs -applicationNameFQDN demo.azure.com
 
-The resulting output directory will contain an .rsp, .req, .cer, and .pfx for Helm, Tiller, and your application fqdn. Additionally, the Trusted Root CA certificate will be exported and labeled rootCA.cer. You can safely delete all of the files except the .pfx and rootCA.cer.
+The resulting output directory will contain an .rsp, .req, .cer, and .pfx file for Helm, Tiller, and your application fqdn. Additionally, the Trusted Root CA certificate will be exported and labeled rootCA.cer. You can safely delete all of the files except the .pfx and rootCA.cer.
 
 ## Manual cert generation
 Use this process if you prefer not to use Powershell to generate the requests as outlined in the previous section
@@ -158,6 +158,3 @@ Use the same steps from the [Create a certificate request from the INF file](#Cr
 <li> Follow the wizard, making sure to export the certificate as "DER encoded binayr x.509"
 <li> Save the certificate
 </ol>
-
-
-
