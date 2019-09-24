@@ -1,20 +1,18 @@
 # Create an AKS cluster with an HTTPS ingress-controller using only private IPs and certificates issued by a Windows CA
 
-An ingress controller is a piece of software that provides reverse proxy, configurable traffic routing, and TLS termination for Kubernetes services. Kubernetes ingress resources are used to configure the ingress rules and routes for individual Kubernetes services. Using an ingress controller and ingress rules, a single IP address can be used to route traffic to multiple services in a Kubernetes cluster.
-
-This article shows you how to deploy the NGINX ingress controller in an Azure Kubernetes Service (AKS) cluster. The ingress controller is configured on an internal, private virtual network and IP address. No external access is allowed. Two applications are then run in the AKS cluster, each of which is accessible over the single IP address.
+This article walks through the deployment of an NGINX ingress controller with SSL termination in an Azure Kubernetes Service (AKS) cluster. The ingress controller is configured on an internal, private virtual network with a private IP address, and will use a certificate issued by a Windows Certificate Authority. As an added security measure, both Helm and Tiller will be also be onfigured to use certificates. Once the ingress controller has been deployed, we'll then add a demo application and configure routing for the ingress resource.
 
 ### At a high level this guide walks through the following
 
 - Create a service principal with a limited scope
-- Deploy AKS using an already existing VNET/subnet with no public IPs
-- Secure Helm and Tiller with CA issued certificates
+- Deploy AKS using an already existing VNET/subnet
+- Secure Helm and Tiller with Windows CA issued certificates
 - Creating an internal load balancer
-- Creating the ingress controller using private IPs and SSL termination- 
-- Deploying a demo application
-- Deploying an ingress route
-- Configuring a remote system to trust the CA certificate chain
-- Test the demo application using curl with cert verification
+- Creating the ingress controller using private IPs and SSL termination
+- Deploy a demo application
+- Add an ingress route for the application
+- Configur a remote system to trust the CA certificate chain
+- Test the demo application using curl with certificate validation
 
 # Prerequisites
 Azure CLI for Linux
