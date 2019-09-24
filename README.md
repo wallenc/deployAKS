@@ -174,9 +174,9 @@ Run the script, using the following as an example. Make sure to replace the --ce
 ### You should now have the following files:
 
 <b>
-\<ingress-cert-name>.crt  
-\<ingress-cert-name>.key  
-\<ingress-cert-name>.nopass.key
+<ingress-cert-name>.crt  
+<ingress-cert-name>.key  
+<ingress-cert-name>.nopass.key
 
 helm.crt  
 helm.key  
