@@ -148,7 +148,7 @@ Copy [convertCertificates.sh](https://github.com/wallenc/deployAKS/blob/master/S
 Mark the script as executable
     $ chmod u+x convertCertificates.sh
 
-Run the script, using the following as an example. Make sure to replace the --cert-path, --out-path, and --pfx-password with values relevant to your scenario
+Run the script, using the following as an example. Make sure to replace the ``--cert-path``, ``--out-path``, and ``--pfx-password`` with values relevant to your scenario
 
     $ ./convertCertificates.sh --cert-path ~/certs --root-cert ~/rootCert.cer  --out-path ~/certs/converted --pfx-password PASSWORD
 
