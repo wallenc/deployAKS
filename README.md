@@ -1,8 +1,8 @@
 # Create an AKS cluster with an HTTPS ingress-controller using only private IPs and certificates issued by a Windows CA
 
-This article walks through the deployment of an NGINX ingress controller with SSL termination in an Azure Kubernetes Service (AKS) cluster. The ingress controller is configured on an internal, private virtual network with a private IP address, and will use a certificate issued by a Windows Certificate Authority. As an added security measure, both Helm and Tiller will be also be onfigured to use certificates. Once the ingress controller has been deployed, we'll then add a demo application and configure routing for the ingress resource.
+This article walks through the deployment of an NGINX ingress controller with SSL termination in an Azure Kubernetes Service (AKS) cluster. The ingress controller is configured on an internal, private virtual network with a private IP address, and will use a certificate issued by a Windows Certificate Authority. As an added security measure, both Helm and Tiller will be also be configured to use certificates. Once the ingress controller has been deployed, we'll then add a demo application and configure routing for the ingress resource.
 
-### At a high level this guide walks through the following
+## At a high level this guide walks through the following
 
 - Creating a service principal with a limited scope
 - Deploying AKS using an already existing VNET/subnet
@@ -14,38 +14,94 @@ This article walks through the deployment of an NGINX ingress controller with SS
 - Configuring a remote system to trust the CA certificate chain
 - Testing the demo application using curl with certificate validation
 
-# Prerequisites
-[Azure CLI for Linux](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest)
+## Prerequisites
 
-# Create a service principal
+- Create AKS Resource Groups
+  - AKS-VNET-RG
+  - AKS-DEMO-RG
+- Create AKS VNETs
+  - AKS-VNET
+- Create a Linux Virtual Machine for initial deployment (these instructions are validated on Ubuntu 18.04 LTS in Azure)
+- Install Azure CLI [Azure CLI for Linux](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest)
+
+- Connect to Azure Government
+
+```bash
+az cloud set --name AzureUSGovernment
+az login
+```
+
+## Create a service principal
+
 An Azure service principal is an identity created for use with applications, hosted services, and automated tools to access Azure resources. This access is restricted by the roles assigned to the service principal, giving you control over which resources can be accessed and at which level. For security reasons, it's always recommended to use service principals with automated tools rather than allowing them to log in with a user identity.
 
 In the example below, the scope of the service principal is limited to only the two resource groups to which it requires access. The first scope is for the resource group where the AKS cluster will be deployed. The second is for the resource group that contains the virtual network and subnet that will be used for the cluster resources:
 
-    $ az ad sp create-for-rbac -n AKS_SP --role contributor \
-        --scopes /subscriptions/061f5e92-edf2-4389-8357-a16f71a2cbf3/resourceGroups/AKS-DEMO-RG \
-                /subscriptions/061f5e92-edf2-4389-8357-a16f71a2cbf3/resourceGroups/AKS-VNET-RG
+```bash
+# list and select the target subscription
+az account list
+az account set -s "target subscription name"
 
-You should see output similar to the following. <b>Make note of the appId and the password:</b>
+# create service principle
+az ad sp create-for-rbac -n AKS_SP --role contributor --scopes /subscriptions/597a1ea0-2951-4cc7-8908-271a88853e60/resourceGroups/AKS-DEMO-RG \ /subscriptions/597a1ea0-2951-4cc7-8908-271a88853e60/resourceGroups/AKS-VNET-RG
+```
 
-    {
-        "appId": "b2abba9c-ef9a-4a0e-8d8b-46d8b53d046b",
-        "displayName": "AKS_SP",
-        "name": "http://AKS_SP",
-        "password": "2a30869c-388e-40cf-8f5f-8d99fea405bf",
-        "tenant": "dbbbe410-bc70-4a57-9d46-f1a1ea293b48"
-    }
+You should see output similar to the following. **Make note of the appId and the password:**
 
-# Create the cluster
+```bash
+{
+    "appId": "b2abba9c-ef9a-4a0e-8d8b-46d8b53d046b",
+    "displayName": "AKS_SP",
+    "name": "http://AKS_SP",
+    "password": "2a30869c-388e-40cf-8f5f-8d99fea405bf",
+    "tenant": "dbbbe410-bc70-4a57-9d46-f1a1ea293b48"
+}
+```
+
+Azure PowerShell provides an alternative method for creating a service principle:
+
+```powershell
+# create service principle
+$sp = New-AzADServicePrincipal -DisplayName AKS-SP
+
+# export service principle secret
+$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($sp.Secret)
+$UnsecureSecret = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+
+# show service principle parameters and password
+$sp
+$UnsecureSecret
+```
+
+You should see output similar to the following.  **Make note of the appID and the password:**
+
+```powershell
+Secret                : System.Security.SecureString
+ServicePrincipalNames : {a6336199-2a88-4453-91bd-b1860fcexxx, http://AKS-SP}
+ApplicationId         : a6336199-2a88-4453-91bd-b1860fcexxxx
+ObjectType            : ServicePrincipal
+DisplayName           : AKS-SP-jarthur
+Id                    : 6c69564d-819e-4669-b169-0b8ab977xxxx
+Type                  :
+
+9a23e0ec-0224-45e5-8a2d-294a71dacd8f
+```
+
+> Note: the string at the end of the output above is the decoded password.
+
+## Create the cluster
 
 The following steps walk through the process of creating the AKS cluster and configuring the required tools in order to access the cluster.
 
 In the below examples, replace the parameters with values that suit your environment. Using the default settings for the network configuration creates a subnet with a /8 CIDR range. As this may be too large for your environment or overlap with an existing VNET, you can configure the cluster to use an already existing subnet. This example shows that configuration. If you would like to use the default settings, simply leave off the `--vnet-subnet-id parameter`. The Service Principal and Client Secret parameters should match the appId and password from the output of the sp create command above.
 
-    az aks create --resource-group AKS-DEMO-RG --name demoAKSCluster --service-principal "b2abba9c-ef9a-4a0e-8d8b-46d8b53d046b" --client-secret "2a30869c-388e-40cf-8f5f-8d99fea405bf" --vnet-subnet-id "/subscriptions/061f5e92-edf2-4389-8357-a16f71a2cbf3/resourceGroups/AKS-VNET-RG/providers/Microsoft.Network/virtualNetworks/AKS-DEMO-VNET/subnets/S-1" --generate-ssh-keys
+```bash
+az aks create --resource-group AKS-DEMO-RG --name demoAKSCluster --service-principal "a6336199-2a88-4453-91bd-b1860fce46e4" --client-secret "9a23e0ec-0224-45e5-8a2d-294a71dacd8f" --vnet-subnet-id "/subscriptions/597a1ea0-2951-4cc7-8908-271a88853e60/resourceGroups/AKS-VNET-RG/providers/Microsoft.Network/virtualNetworks/AKS-VNET/subnets/aks-vnet-sn0" --generate-ssh-keys
+```
 
 When the above command completes, you should see output that resembles the following
 
+```json
     {
     "aadProfile": null,
     "addonProfiles": null,
@@ -108,17 +164,26 @@ When the above command completes, you should see output that resembles the follo
     "type": "Microsoft.ContainerService/ManagedClusters",
     "windowsProfile": null
     }
+```
 
-## Install kubectl and get the credentials to connect to the cluster
-  
-    $ sudo az aks install-cli
-    $ az aks get-credentials --resource-group AKS-DEMO-RG --name demoAKSCluster
-    
-    Merged "demoAKSCluster" as current context in /home/azureadmin/.kube/config
+### Install kubectl and get the credentials to connect to the cluster
+
+```bash
+sudo az aks install-cli
+az aks get-credentials --resource-group AKS-DEMO-RG --name demoAKSCluster
+```
+
+You should see the following output:
+
+```bash
+Merged "demoAKSCluster" as current context in /home/azureadmin/.kube/config
+```
 
 Make sure you're able to connect to the cluster.
   
-    $ kubectl get nodes
+```bash
+kubectl get nodes
+```
 
 The output should resemble the following:
 
@@ -129,21 +194,35 @@ The output should resemble the following:
 | aks-nodepool1-74185687-2 | Ready  | agent | 6m45s  | v1.12.8 |
 
 ## Install and configure Helm
-Use the installation guide from [Helm](https://helm.sh/docs/using_helm/#installing-helm)   
->NOTE: You may need to add the path to the Helm binary to your PATH before you're able to use  Helm
 
-    $ PATH="/usr/local/bin/helm:$PATH"
+Use the installation guide from [Helm](https://helm.sh/docs/using_helm/#installing-helm).
 
-## Generate certificates for Helm, Tiller, and the ingress controller
+```bash
+curl -LO https://git.io/get_helm.sh
+chmod 700 get_helm.sh
+./get_helm.sh
+helm init
+```
+
+> Note: You may need to add the path to the Helm binary to your PATH before you're able to use Helm
+
+```bash
+PATH="/usr/local/bin/helm:$PATH"
+```
+
+### Generate certificates for Helm, Tiller, and the ingress controller
+
 Use this [guide](https://github.com/wallenc/deployAKS/blob/master/Guides/Generate%20Certificate%20Requests%20for%20Helm%2C%20Tiller%2C%20and%20the%20Ingress%20Controller.md) to generate the certificate requests and export with a private key
 
 Once the certificates have been created, copy them to a directory on your Linux host.
 
-## Convert the pfx files to .cer and .key files
+### Convert the pfx files to .cer and .key files
+
 The following steps will walk you through converting the PFX files to .crt and .key format which is required for Linux. You can either run these commands manually from the command line or convert the certificates using a bash script.
 
 #### Using the bash script to convert the certificates
-Copy [convertCertificates.sh](https://github.com/wallenc/deployAKS/blob/master/Scripts/convertCertificates.sh) to your Linux host. 
+
+Copy [convertCertificates.sh](https://github.com/wallenc/deployAKS/blob/master/Scripts/convertCertificates.sh) to your Linux host.
 
 Mark the script as executable
     $ chmod u+x convertCertificates.sh
@@ -165,7 +244,7 @@ Convert the root certifcate to PEM format
     $ openssl x509 -inform der -in rootCA.cer -out rootCA.crt
 
 
-### You should now have the following files:
+#### You should now have the following files:
 
 - demoazurecom.crt
 - demoazurecom.key
@@ -178,7 +257,6 @@ Convert the root certifcate to PEM format
 - tiller.crt
 - tiller.key
 - tiller.nopass.key
-
 
 ## Create a custom Tiller installation using TLS certificates
 
@@ -211,7 +289,6 @@ You should now see the tiller pod in a running status
 | ------------------------------ | ----- | ------- | -------- | --- |
 | tiller-deploy-69775bbbc7-c42wp | 1/1   | Running | 0        | 5m  |
 
-  
 #### Configure TLS for the Helm client
 
 Copy the Helm certificate and key to ~/.helm
@@ -240,12 +317,12 @@ The first step is to create a manifest file which will be used for the load bala
         annotations:
           service.beta.kubernetes.io/azure-load-balancer-internal: "true"
 
-#### Create a namespace for the ingress controller
+### Create a namespace for the ingress controller
 
     $ kubectl create namespace ingress-demo
     namespace/ingress-demo created
 
-#### Create a Kubernetes secret to add the certificate to the namespace
+### Create a Kubernetes secret to add the certificate to the namespace
 
     $ kubectl create secret tls azure-demo-secret \
         -n ingress-demo \
@@ -271,19 +348,19 @@ Verify that the ingress services are running. I've added the ``--watch`` paramet
 
     $ kubectl get svc -n ingress-demo --watch
 
-| NAME                                        | TYPE         | CLUSTER-IP   | EXTERNAL-IP | PORT(S)                    | AGE   |
-| ------------------------------------------- | ------------ | ------------ | ----------- | -------------------------- | ----- |
-| demo-nginx-ingress-controller      | LoadBalancer | 10.0.158.131 | 10.240.0.42 | 80:31419/TCP,443:32441/TCP | 4m18s |
-| demo-nginx-ingress-default-backend | ClusterIP    | 10.0.211.237 | \<none>     | 80/TCP                     | 4m18s |
+| NAME | TYPE | CLUSTER-IP | EXTERNAL-IP | PORT(S) | AGE |
+|---|---|---|---|---|---|
+| demo-nginx-ingress-controller | LoadBalancer | 10.0.158.131 | 10.240.0.42 | 80:31419/TCP,443:32441/TCP | 4m18s |
+| demo-nginx-ingress-default-backend | ClusterIP | 10.0.211.237 | \<none> | 80/TCP | 4m18s |
 
-## Add the demo application
+### Add the demo application
 
 Add the Azure-Samples repo to Helm and install the aks-helloworld application
 
     $ helm repo add azure-samples https://azure-samples.github.io/helm-charts/
     $ helm install azure-samples/aks-helloworld --namespace ingress-demo --tls
 
-## Create an ingress route
+### Create an ingress route
 
 The demo application is now running on your Kubernetes cluster. To route traffic to the application, create a Kubernetes ingress resource. The ingress resource configures the rules that route traffic to the applications.
 
@@ -321,7 +398,7 @@ Create the ingress resource
   
     $ kubectl apply -f hello-world-ingress.yaml
 
-## Add the CA certificate to the trusted store on the remote host
+### Add the CA certificate to the trusted store on the remote host
 
 Either copy the demoArootCA.crt file to the VM or create a new .crt file and paste in the contents of rootCA.crt
 Once you have the file created, add it to the trusted store:
@@ -329,8 +406,8 @@ Once you have the file created, add it to the trusted store:
     $ sudo cp rootCA.crt /etc/pki/ca-trust/source/anchors/
     $ sudo update-ca-trust
 
-## Trust the CA certificate and test the demo application
-The following steps are for Ubuntu. Please see the instructions for adding a new CA certificate for the Linux distro you're using. 
+### Trust the CA certificate and test the demo application
+The following steps are for Ubuntu. Please see the instructions for adding a new CA certificate for the Linux distro you're using.
 
     $ sudo mkdir /usr/share/ca-certificates/extra
 
@@ -395,7 +472,8 @@ curl -v https://demo.azure.com
         </div>
     </body>
     * Connection #0 to host demo.azure.com left intact
-    
-### References
+
+## References
+
 [Create an HTTPS ingress controller and use your own TLS certificates on Azure Kubernetes Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/ingress-own-tls)
 [Create an ingress controller to an internal virtual network in Azure Kubernetes Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/ingress-internal-ip)
