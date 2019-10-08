@@ -232,7 +232,7 @@ If TLS has been configured properly, you should see the following output
 
 In this step, we'll deploy the ingress controller using an internal load balancer. This will not create any public endpoints and will only provide access to the ingress resource from the internal private network.
 
-The first step is to create a manifest file which will be used for the load balancer resource. In the below example, I've created a file named internal-ingress.yml and assigned 10.240.0.42 as the loadBalancerIP. Be sure to provide a valid IP from the subnet where your AKS cluster is located. 
+The first step is to create a manifest file which will be used for the load balancer resource. In the below example, I've created a file named internal-loadbalancer.yml and assigned 10.240.0.42 as the loadBalancerIP. Be sure to provide a valid IP from the subnet where your AKS cluster is located. 
 
     controller:
       service:
@@ -261,7 +261,7 @@ The ingress controller also needs to be scheduled on a Linux node. Windows Serve
 
     $ helm install --name demo stable/nginx-ingress \
         --namespace ingress-demo \
-        -f internal-ingress.yaml \
+        -f internal-loadbalancer.yml \
         --set controller.replicaCount=2 \
         --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux \
         --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux \
