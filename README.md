@@ -255,9 +255,9 @@ The first step is to create a manifest file which will be used for the load bala
 
 Deploy the ingress controller
 
-Now deploy the nginx-ingress chart with Helm. To use the manifest file created in the previous step, add the `-f internal-ingress.yaml` parameter. For added redundancy, two replicas of the NGINX ingress controllers are deployed with the `--set controller.replicaCount` parameter. To fully benefit from running replicas of the ingress controller, make sure there's more than one node in your AKS cluster.
+Now deploy the nginx-ingress chart with Helm. To use the manifest file created in the previous step, we need to add the `-f internal-loadbalancer.yml` parameter. If this parameter isn't specified, the load balancer will be created with a public IP. For added redundancy, two replicas of the NGINX ingress controllers are deployed with the `--set controller.replicaCount` parameter. To fully benefit from running replicas of the ingress controller, make sure there's more than one node in your AKS cluster.
 
-The ingress controller also needs to be scheduled on a Linux node. Windows Server nodes (currently in preview in AKS) shouldn't run the ingress controller. A node selector is specified using the `--set nodeSelector` parameter to tell the Kubernetes scheduler to run the NGINX ingress controller on a Linux-based node. Also, the `--tls` parameter must be added as Helm/Tiller now uses TLS authentication.
+The ingress controller also needs to be scheduled on a Linux node. Windows Server nodes (currently in preview in AKS) shouldn't run the ingress controller. A node selector is specified using the `--set nodeSelector` parameter to tell the Kubernetes scheduler to run the NGINX ingress controller on a Linux-based node. Also, the `--tls` parameter must be added as Helm/Tiller are now configured to use TLS authentication.
 
     $ helm install --name demo stable/nginx-ingress \
         --namespace ingress-demo \
@@ -267,7 +267,7 @@ The ingress controller also needs to be scheduled on a Linux node. Windows Serve
         --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux \
         --tls
 
-Verify that the ingress services are running. I've added the ``--watch`` parameter to monitor the namespace for any changes as it may take a few minutes for the loadbalancer resource to initialize and acquire the external IP address.
+Verify that the ingress services are running. I've added the ``--watch`` parameter to monitor the namespace for any changes as it may take a few minutes for the loadbalancer resource to initialize and acquire the IP address specified in the internal-loadbalancer.yml manifest.
 
     $ kubectl get svc -n ingress-demo --watch
 
