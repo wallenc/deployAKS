@@ -276,6 +276,17 @@ Verify that the ingress services are running. I've added the ``--watch`` paramet
 | demo-nginx-ingress-controller      | LoadBalancer | 10.0.158.131 | 10.240.0.42 | 80:31419/TCP,443:32441/TCP | 4m18s |
 | demo-nginx-ingress-default-backend | ClusterIP    | 10.0.211.237 | \<none>     | 80/TCP                     | 4m18s |
 
+> If the EXTERNAL-IP remains in a pending status for more than 3-4 minutes, there could be an issue with allocating the IP address specified in the internal-loadbalancer.yml manifest. To check the status of the load balancer, run the following command.
+``kubectl describe svc -n ingress-demo demo-nginx-ingress-controller``. If there is an issue with creating the loadbalancer, you will see the following status under Events:
+
+    Events:
+      Type     Reason                      Age   From                Message
+      ----     ------                      ----  ----                -------
+      Normal   EnsuringLoadBalancer        8s    service-controller  Ensuring load balancer
+      Warning  CreatingLoadBalancerFailed  5s    service-controller  Error creating load balancer (will retry): failed to ensure load balancer for service ingress-demo/demo-nginx-ingress-controller: timed out waiting for the condition
+
+>If you see the above message, double-check the internal-loadbalancer.yml manifest and ensure you've specified an IP that is in the CIDR range of the subnet to which your AKS cluster nodes are attached.
+
 ## Add the demo application
 
 Add the Azure-Samples repo to Helm and install the aks-helloworld application
