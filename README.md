@@ -80,7 +80,7 @@ Secret                : System.Security.SecureString
 ServicePrincipalNames : {a6336199-2a88-4453-91bd-b1860fcexxx, http://AKS-SP}
 ApplicationId         : a6336199-2a88-4453-91bd-b1860fcexxxx
 ObjectType            : ServicePrincipal
-DisplayName           : AKS-SP-jarthur
+DisplayName           : AKS-SP
 Id                    : 6c69564d-819e-4669-b169-0b8ab977xxxx
 Type                  :
 
