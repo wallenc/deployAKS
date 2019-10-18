@@ -332,26 +332,25 @@ Create the ingress resource
   
     $ kubectl apply -f hello-world-ingress.yaml
 
-## Add the CA certificate to the trusted store on the remote host
-
-Either copy the demoArootCA.crt file to the VM or create a new .crt file and paste in the contents of rootCA.crt
-Once you have the file created, add it to the trusted store:
-
-    $ sudo cp rootCA.crt /etc/pki/ca-trust/source/anchors/
-    $ sudo update-ca-trust
-
 ## Trust the CA certificate and test the demo application
 The following steps are for Ubuntu. Please see the instructions for adding a new CA certificate for the Linux distro you're using. 
 
-    $ sudo mkdir /usr/share/ca-certificates/extra
+    $ sudo cp rootCA.crt /usr/share/ca-certificates/
 
 Modify /etc/ca-certificates.conf to include a reference to your new certificate.
 
-    $ cat rootCert.crt >> /etc/ca-certificates.conf
+    $ sudo echo rootCA.crt >> /etc/ca-certificates.conf
 
 Update CA certificates
 
     $ update-ca-certificates
+
+> You should see the following output
+
+    Updating certificates in /etc/ssl/certs...
+    1 added, 0 removed; done.
+    Running hooks in /etc/ca-certificates/update.d...
+    done.
 
 If you don't have DNS configured to provide host name resolution for your application FQDN, add a host entry for demo.azure.com on the Linux host from where you'll be testing the application.
 
