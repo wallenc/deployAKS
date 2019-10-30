@@ -40,85 +40,85 @@ In the below examples, replace the parameters with values that suit your environ
 
 When the above command completes, you should see output that resembles the following
 
-    {
-  "aadProfile": null,
-  "addonProfiles": null,
-  "agentPoolProfiles": [
-    {
-      "availabilityZones": null,
-      "count": 3,
-      "enableAutoScaling": null,
-      "enableNodePublicIp": null,
-      "maxCount": null,
-      "maxPods": 110,
-      "minCount": null,
-      "name": "nodepool1",
-      "nodeTaints": null,
-      "orchestratorVersion": "1.13.11",
-      "osDiskSizeGb": 100,
-      "osType": "Linux",
-      "provisioningState": "Succeeded",
-      "scaleSetEvictionPolicy": null,
-      "scaleSetPriority": null,
-      "type": "AvailabilitySet",
-      "vmSize": "Standard_DS2_v2",
-      "vnetSubnetId": null
-    }
-  ],
-  "apiServerAccessProfile": null,
-  "dnsPrefix": "demoAKSClu-AKS-DEMO-RG-d8abb5",
-  "enablePodSecurityPolicy": null,
-  "enableRbac": true,
-  "fqdn": "demoaksclu-aks-demo-rg-d8abb5-31f98150.hcp.usgovvirginia.cx.aks.containerservice.azure.us",
-  "id": "/subscriptions/d57e8588-4992-4af7-8580-ff38bf1e98bf/resourcegroups/AKS-DEMO-RG/providers/Microsoft.ContainerService/managedClusters/demoAKSCluster",
-  "identity": null,
-  "kubernetesVersion": "1.13.11",
-  "linuxProfile": {
-    "adminUsername": "azureuser",
-    "ssh": {
-      "publicKeys": [
+      {
+      "aadProfile": null,
+      "addonProfiles": null,
+      "agentPoolProfiles": [
         {
-          "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDOKhPxBD5P2du9GVLjV0f/79YjKncBHqSPa8vgFiUi9iE907/yI6iQdjEBe/DqT0KODhCZxEVjL15Gbe2vfu1jFHFg8MfYhh2heLAZbDp/20/Hc44a5rvVHKNygmgrwlLo6qyKunXAem2Uicv6tn3FGOiFbsSj15twgKuEvEiHr+V3wdjg0jtDh5WzUMQZZeK43ONJvBpdAgY1CahOM74XC9i/dwPIywy+8QjR2T/v6WghrmFWCMm6dIynRdvtiJ89GMe/1DtA+DBvXzP04r6uZy9wNFQFqQySVxDXnO52MDzh1FZtiBewbCG+xsJCb2iTNIPKa5ugjItJABHdFm6D azureadmin@ansibleubu1804\n"
-        }
-      ]
-    }
-  },
-  "location": "usgovvirginia",
-  "maxAgentPools": 1,
-  "name": "demoAKSCluster",
-  "networkProfile": {
-    "dnsServiceIp": "10.0.0.10",
-    "dockerBridgeCidr": "172.17.0.1/16",
-    "loadBalancerProfile": {
-      "effectiveOutboundIps": [
-        {
-          "id": "/subscriptions/d57e8588-4992-4af7-8580-ff38bf1e98bf/resourceGroups/MC_AKS-DEMO-RG_demoAKSCluster_usgovvirginia/providers/Microsoft.Network/publicIPAddresses/65a96698-8d88-4f94-bcc6-36d3200fa7fe",
-          "resourceGroup": "MC_AKS-DEMO-RG_demoAKSCluster_usgovvirginia"
+          "availabilityZones": null,
+          "count": 3,
+          "enableAutoScaling": null,
+          "enableNodePublicIp": null,
+          "maxCount": null,
+          "maxPods": 110,
+          "minCount": null,
+          "name": "nodepool1",
+          "nodeTaints": null,
+          "orchestratorVersion": "1.13.11",
+          "osDiskSizeGb": 100,
+          "osType": "Linux",
+          "provisioningState": "Succeeded",
+          "scaleSetEvictionPolicy": null,
+          "scaleSetPriority": null,
+          "type": "AvailabilitySet",
+          "vmSize": "Standard_DS2_v2",
+          "vnetSubnetId": null
         }
       ],
-      "managedOutboundIps": {
-        "count": 1
+      "apiServerAccessProfile": null,
+      "dnsPrefix": "demoAKSClu-AKS-DEMO-RG-d8abb5",
+      "enablePodSecurityPolicy": null,
+      "enableRbac": true,
+      "fqdn": "demoaksclu-aks-demo-rg-d8abb5-31f98150.hcp.usgovvirginia.cx.aks.containerservice.azure.us",
+      "id": "/subscriptions/d57e8588-4992-4af7-8580-ff38bf1e98bf/resourcegroups/AKS-DEMO-RG/providers/Microsoft.ContainerService/managedClusters/demoAKSCluster",
+      "identity": null,
+      "kubernetesVersion": "1.13.11",
+      "linuxProfile": {
+        "adminUsername": "azureuser",
+        "ssh": {
+          "publicKeys": [
+            {
+              "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDOKhPxBD5P2du9GVLjV0f/79YjKncBHqSPa8vgFiUi9iE907/yI6iQdjEBe/DqT0KODhCZxEVjL15Gbe2vfu1jFHFg8MfYhh2heLAZbDp/20/Hc44a5rvVHKNygmgrwlLo6qyKunXAem2Uicv6tn3FGOiFbsSj15twgKuEvEiHr+V3wdjg0jtDh5WzUMQZZeK43ONJvBpdAgY1CahOM74XC9i/dwPIywy+8QjR2T/v6WghrmFWCMm6dIynRdvtiJ89GMe/1DtA+DBvXzP04r6uZy9wNFQFqQySVxDXnO52MDzh1FZtiBewbCG+xsJCb2iTNIPKa5ugjItJABHdFm6D azureadmin@ansibleubu1804\n"
+            }
+          ]
+        }
       },
-      "outboundIpPrefixes": null,
-      "outboundIps": null
-    },
-    "loadBalancerSku": "Standard",
-    "networkPlugin": "kubenet",
-    "networkPolicy": null,
-    "podCidr": "10.244.0.0/16",
-    "serviceCidr": "10.0.0.0/16"
-  },
-  "nodeResourceGroup": "MC_AKS-DEMO-RG_demoAKSCluster_usgovvirginia",
-  "provisioningState": "Succeeded",
-  "resourceGroup": "AKS-DEMO-RG",
-  "servicePrincipalProfile": {
-    "clientId": "dc46c050-7f9e-4675-b1f4-9bb5ec9119b4",
-    "secret": null
-  },
-  "tags": null,
-  "type": "Microsoft.ContainerService/ManagedClusters",
-  "windowsProfile": null
-}
+      "location": "usgovvirginia",
+      "maxAgentPools": 1,
+      "name": "demoAKSCluster",
+      "networkProfile": {
+        "dnsServiceIp": "10.0.0.10",
+        "dockerBridgeCidr": "172.17.0.1/16",
+        "loadBalancerProfile": {
+          "effectiveOutboundIps": [
+            {
+              "id": "/subscriptions/d57e8588-4992-4af7-8580-ff38bf1e98bf/resourceGroups/MC_AKS-DEMO-RG_demoAKSCluster_usgovvirginia/providers/Microsoft.Network/publicIPAddresses/65a96698-8d88-4f94-bcc6-36d3200fa7fe",
+              "resourceGroup": "MC_AKS-DEMO-RG_demoAKSCluster_usgovvirginia"
+            }
+          ],
+          "managedOutboundIps": {
+            "count": 1
+          },
+          "outboundIpPrefixes": null,
+          "outboundIps": null
+        },
+        "loadBalancerSku": "Standard",
+        "networkPlugin": "kubenet",
+        "networkPolicy": null,
+        "podCidr": "10.244.0.0/16",
+        "serviceCidr": "10.0.0.0/16"
+      },
+      "nodeResourceGroup": "MC_AKS-DEMO-RG_demoAKSCluster_usgovvirginia",
+      "provisioningState": "Succeeded",
+      "resourceGroup": "AKS-DEMO-RG",
+      "servicePrincipalProfile": {
+        "clientId": "dc46c050-7f9e-4675-b1f4-9bb5ec9119b4",
+        "secret": null
+      },
+      "tags": null,
+      "type": "Microsoft.ContainerService/ManagedClusters",
+      "windowsProfile": null
+    }
 
 ## Install kubectl and get the credentials to connect to the cluster
   
