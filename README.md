@@ -150,6 +150,8 @@ Use the installation guide from [Helm](https://helm.sh/docs/using_helm/#installi
 
     $ PATH="/usr/local/bin/helm:$PATH"
 
+Configure Helm and Tiller
+
     $ helm init --service-account tiller
     $ kubectl create serviceaccount --namespace kube-system tiller-sa
     $ kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller-sa
