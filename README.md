@@ -14,17 +14,11 @@ This article walks through the deployment of an NGINX ingress controller with SS
 
 # Prerequisites
 - [Azure CLI for Linux or Windows Subsystem for Linx](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest)
-- Service Principal
-- Existing AKS Cluster
 
 # Create a service principal
-An Azure service principal is an identity created for use with applications, hosted services, and automated tools to access Azure resources. This access is restricted by the roles assigned to the service principal, giving you control over which resources can be accessed and at which level. For security reasons, it's always recommended to use service principals with automated tools rather than allowing them to log in with a user identity.
+If you wish to create a service principal with a limited scope, please see this [guide](). Otherwise, continue with the following instructions.
 
-In the example below, the scope of the service principal is limited to only the two resource groups to which it requires access. The first scope is for the resource group where the AKS cluster will be deployed. The second is for the resource group that contains the virtual network and subnet that will be used for the cluster resources:
-
-    $ az ad sp create-for-rbac -n AKS_SP --role contributor \
-        --scopes /subscriptions/061f5e92-edf2-4389-8357-a16f71a2cbf3/resourceGroups/AKS-DEMO-RG \
-                /subscriptions/061f5e92-edf2-4389-8357-a16f71a2cbf3/resourceGroups/AKS-VNET-RG
+    $ az ad sp create-for-rbac -n AKS_SP
 
 You should see output similar to the following. <b>Make note of the appId and the password:</b>
 
@@ -42,78 +36,97 @@ The following steps walk through the process of creating the AKS cluster and con
 
 In the below examples, replace the parameters with values that suit your environment. Using the default settings for the network configuration creates a subnet with a /8 CIDR range. As this may be too large for your environment or overlap with an existing VNET, you can configure the cluster to use an already existing subnet. This example shows that configuration. If you would like to use the default settings, simply leave off the `--vnet-subnet-id parameter`. The Service Principal and Client Secret parameters should match the appId and password from the output of the sp create command above.
 
-    az aks create --resource-group AKS-DEMO-RG --name demoAKSCluster --service-principal "b2abba9c-ef9a-4a0e-8d8b-46d8b53d046b" --client-secret "2a30869c-388e-40cf-8f5f-8d99fea405bf" --vnet-subnet-id "/subscriptions/061f5e92-edf2-4389-8357-a16f71a2cbf3/resourceGroups/AKS-VNET-RG/providers/Microsoft.Network/virtualNetworks/AKS-DEMO-VNET/subnets/S-1" --generate-ssh-keys
+    az aks create --resource-group AKS-DEMO-RG --name demoAKSCluster --service-principal "b2abba9c-ef9a-4a0e-8d8b-46d8b53d046b" --client-secret "2a30869c-388e-40cf-8f5f-8d99fea405bf" --generate-ssh-keys
 
 When the above command completes, you should see output that resembles the following
 
     {
-    "aadProfile": null,
-    "addonProfiles": null,
-    "agentPoolProfiles": [
-        {
-        "availabilityZones": null,
-        "count": 3,
-        "enableAutoScaling": null,
-        "maxCount": null,
-        "maxPods": 110,
-        "minCount": null,
-        "name": "nodepool1",
-        "orchestratorVersion": "1.13.10",
-        "osDiskSizeGb": 100,
-        "osType": "Linux",
-        "provisioningState": "Succeeded",
-        "type": "AvailabilitySet",
-        "vmSize": "Standard_DS2_v2",
-        "vnetSubnetId": "/subscriptions/061f5e92-edf2-4389-8357-a16f71a2cbf3/resourceGroups/AKS-VNET-RG/providers/Microsoft.Network/virtualNetworks/AKS-DEMO-VNET/subnets/S-1"
-        }
-    ],
-    "apiServerAuthorizedIpRanges": null,
-    "dnsPrefix": "demoAKSClu-AKS-DEMO-RG-d8abb5",
-    "enablePodSecurityPolicy": null,
-    "enableRbac": true,
-    "fqdn": "demoaksclu-aks-demo-rg-d8abb5-5951d80c.hcp.usgovvirginia.cx.aks.containerservice.azure.us",
-    "id": "/subscriptions/061f5e92-edf2-4389-8357-a16f71a2cbf3/resourcegroups/AKS-DEMO-RG/providers/Microsoft.ContainerService/managedClusters/demoAKSCluster",
-    "identity": null,
-    "kubernetesVersion": "1.13.10",
-    "linuxProfile": {
-        "adminUsername": "azureuser",
-        "ssh": {
-        "publicKeys": [
-            {
-            "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDOKhPxBD5P2du9GVLjV0f/79YjKncBHqSPa8vgFiUi9iE907/yI6iQdjEBe/DqT0KODhCZxEVjL15Gbe2vfu1jFHFg8MfYhh2heLAZbDp/20/Hc44a5rvVHKNygmgrwlLo6qyKunXAem2Uicv6tn3FGOiFbsSj15twgKuEvEiHr+V3wdjg0jtDh5WzUMQZZeK43ONJvBpdAgY1CahOM74XC9i/dwPIywy+8QjR2T/v6WghrmFWCMm6dIynRdvtiJ89GMe/1DtA+DBvXzP04r6uZy9wNFQFqQySVxDXnO52MDzh1FZtiBewbCG+xsJCb2iTNIPKa5ugjItJABHdFm6D azureadmin@ansibleubu1804\n"
-            }
-        ]
-        }
-    },
-    "location": "usgovvirginia",
-    "maxAgentPools": 1,
-    "name": "demoAKSCluster",
-    "networkProfile": {
-        "dnsServiceIp": "10.0.0.10",
-        "dockerBridgeCidr": "172.17.0.1/16",
-        "loadBalancerSku": "Basic",
-        "networkPlugin": "kubenet",
-        "networkPolicy": null,
-        "podCidr": "10.244.0.0/16",
-        "serviceCidr": "10.0.0.0/16"
-    },
-    "nodeResourceGroup": "MC_AKS-DEMO-RG_demoAKSCluster_usgovvirginia",
-    "provisioningState": "Succeeded",
-    "resourceGroup": "AKS-DEMO-RG",
-    "servicePrincipalProfile": {
-        "clientId": "ecca5e35-df9d-4c6a-b025-1f3035bf8213",
-        "secret": null
-    },
-    "tags": null,
-    "type": "Microsoft.ContainerService/ManagedClusters",
-    "windowsProfile": null
+  "aadProfile": null,
+  "addonProfiles": null,
+  "agentPoolProfiles": [
+    {
+      "availabilityZones": null,
+      "count": 3,
+      "enableAutoScaling": null,
+      "enableNodePublicIp": null,
+      "maxCount": null,
+      "maxPods": 110,
+      "minCount": null,
+      "name": "nodepool1",
+      "nodeTaints": null,
+      "orchestratorVersion": "1.13.11",
+      "osDiskSizeGb": 100,
+      "osType": "Linux",
+      "provisioningState": "Succeeded",
+      "scaleSetEvictionPolicy": null,
+      "scaleSetPriority": null,
+      "type": "AvailabilitySet",
+      "vmSize": "Standard_DS2_v2",
+      "vnetSubnetId": null
     }
+  ],
+  "apiServerAccessProfile": null,
+  "dnsPrefix": "demoAKSClu-AKS-DEMO-RG-d8abb5",
+  "enablePodSecurityPolicy": null,
+  "enableRbac": true,
+  "fqdn": "demoaksclu-aks-demo-rg-d8abb5-31f98150.hcp.usgovvirginia.cx.aks.containerservice.azure.us",
+  "id": "/subscriptions/d57e8588-4992-4af7-8580-ff38bf1e98bf/resourcegroups/AKS-DEMO-RG/providers/Microsoft.ContainerService/managedClusters/demoAKSCluster",
+  "identity": null,
+  "kubernetesVersion": "1.13.11",
+  "linuxProfile": {
+    "adminUsername": "azureuser",
+    "ssh": {
+      "publicKeys": [
+        {
+          "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDOKhPxBD5P2du9GVLjV0f/79YjKncBHqSPa8vgFiUi9iE907/yI6iQdjEBe/DqT0KODhCZxEVjL15Gbe2vfu1jFHFg8MfYhh2heLAZbDp/20/Hc44a5rvVHKNygmgrwlLo6qyKunXAem2Uicv6tn3FGOiFbsSj15twgKuEvEiHr+V3wdjg0jtDh5WzUMQZZeK43ONJvBpdAgY1CahOM74XC9i/dwPIywy+8QjR2T/v6WghrmFWCMm6dIynRdvtiJ89GMe/1DtA+DBvXzP04r6uZy9wNFQFqQySVxDXnO52MDzh1FZtiBewbCG+xsJCb2iTNIPKa5ugjItJABHdFm6D azureadmin@ansibleubu1804\n"
+        }
+      ]
+    }
+  },
+  "location": "usgovvirginia",
+  "maxAgentPools": 1,
+  "name": "demoAKSCluster",
+  "networkProfile": {
+    "dnsServiceIp": "10.0.0.10",
+    "dockerBridgeCidr": "172.17.0.1/16",
+    "loadBalancerProfile": {
+      "effectiveOutboundIps": [
+        {
+          "id": "/subscriptions/d57e8588-4992-4af7-8580-ff38bf1e98bf/resourceGroups/MC_AKS-DEMO-RG_demoAKSCluster_usgovvirginia/providers/Microsoft.Network/publicIPAddresses/65a96698-8d88-4f94-bcc6-36d3200fa7fe",
+          "resourceGroup": "MC_AKS-DEMO-RG_demoAKSCluster_usgovvirginia"
+        }
+      ],
+      "managedOutboundIps": {
+        "count": 1
+      },
+      "outboundIpPrefixes": null,
+      "outboundIps": null
+    },
+    "loadBalancerSku": "Standard",
+    "networkPlugin": "kubenet",
+    "networkPolicy": null,
+    "podCidr": "10.244.0.0/16",
+    "serviceCidr": "10.0.0.0/16"
+  },
+  "nodeResourceGroup": "MC_AKS-DEMO-RG_demoAKSCluster_usgovvirginia",
+  "provisioningState": "Succeeded",
+  "resourceGroup": "AKS-DEMO-RG",
+  "servicePrincipalProfile": {
+    "clientId": "dc46c050-7f9e-4675-b1f4-9bb5ec9119b4",
+    "secret": null
+  },
+  "tags": null,
+  "type": "Microsoft.ContainerService/ManagedClusters",
+  "windowsProfile": null
+}
 
 ## Install kubectl and get the credentials to connect to the cluster
   
     $ sudo az aks install-cli
     $ az aks get-credentials --resource-group AKS-DEMO-RG --name demoAKSCluster
-    
+
+> You should see the following output when the command completes    
+
     Merged "demoAKSCluster" as current context in /home/azureadmin/.kube/config
 
 Make sure you're able to connect to the cluster.
@@ -130,82 +143,22 @@ The output should resemble the following:
 
 ## Install and configure Helm
 Use the installation guide from [Helm](https://helm.sh/docs/using_helm/#installing-helm)   
->NOTE: You may need to add the path to the Helm binary to your PATH before you're able to use  Helm
+
+>NOTE: You may need to add the path to the Helm binary to your PATH before you're able to use Helm
 
     $ PATH="/usr/local/bin/helm:$PATH"
 
-## Generate certificates for Helm, Tiller, and the ingress controller
-Use this [guide](https://github.com/wallenc/deployAKS/blob/master/Guides/Generate%20Certificate%20Requests%20for%20Helm%2C%20Tiller%2C%20and%20the%20Ingress%20Controller.md) to generate the certificate requests and export with a private key
+    $ helm init --service-account tiller
+    $ kubectl create serviceaccount --namespace kube-system tiller-sa
+    $ kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller-sa
 
-Once the certificates have been created, copy them to a directory on your Linux host.
+If you want to take an additional step and secure Helm and Tiller with TLS certificates, please see this [guide](https://github.com/wallenc/deployAKS/blob/master/Guides/Generate%20Certificate%20Requests%20for%20Helm%2C%20Tiller%2C%20and%20the%20Ingress%20Controller.md)
 
-## Convert the pfx files to .cer and .key files
-The following steps will walk you through converting the PFX files to .crt and .key format which is required for Linux. You can either run these commands manually from the command line or convert the certificates using a bash script.
-
-#### Using the bash script to convert the certificates
-Copy [convertCertificates.sh](https://github.com/wallenc/deployAKS/blob/master/Scripts/convertCertificates.sh) to your Linux host. 
-
-Mark the script as executable
-    $ chmod u+x convertCertificates.sh
-
-Run the script, using the following as an example. Make sure to replace the ``--cert-path``, ``--out-path``, and ``--pfx-password`` with values relevant to your scenario
-
-    $ ./convertCertificates.sh --cert-path ~/certs --root-cert ~/rootCert.cer  --out-path ~/certs/converted --pfx-password PASSWORD
-
-#### To manually convert the certificates run the below commands for each cert. Replace \<cert-name> with the name of the certificate to convert, and replace "PASSWORD" with the password used when exporting the certificate.
-    
-    $ openssl pkcs12 -clcerts -nokeys -in <cert-name>.pfx -out <cert-name>.crt" -password pass:PASSWORD -passin pass:PASSWORD
-
-    $ openssl pkcs12 -nocerts -in <cert-name>.pfx -out <cert-name>.key -password pass:PASSWORD -passin pass:PASSWORD -passout pass:PASSWORD
-
-    $ openssl rsa -in <cert-name>.key -out <cert-name>.nopass.key" -passin pass:PASSWORD
-
-Convert the root certifcate to PEM format
-    
-    $ openssl x509 -inform der -in rootCA.cer -out rootCA.crt
-
-
-### You should now have the following files:
-
-- demoazurecom.crt
-- demoazurecom.key
-- demoazurecom.nopass.key
-
-- helm.crt
-- helm.key
-- helm.nopass.key
-
-- tiller.crt
-- tiller.key
-- tiller.nopass.key
-
-
-## Create a custom Tiller installation using TLS certificates
-
-To create the Tiller installation we use the `helm init` command. In the below example we provide the TLS certificates that were generated in the previous section.
-
-     $ helm init --tiller-tls --tiller-tls-cert ~/tiller.crt --tiller-tls-key ~/tiller.nopass.key --tiller-tls-verify --tls-ca-cert ~/rootCA.pem
-
-### Add the Tiller service account and create the RBAC role
-
-    $ kubectl create serviceaccount -n kube-system tiller
-
-    $ kubectl create clusterrolebinding tiller-cluster-rule \
-        --clusterrole=cluster-admin \
-        --serviceaccount=kube-system:tiller
-
-    $ kubectl patch deploy -n kube-system tiller-deploy \
-        -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
-
-#### Reinitialize the service account
-
-    $ helm init --service-account tiller --upgrade
-
-#### Ensure the Tiller pod is ready with the `kubectl get pods` command
+Now make sure the Tiller pod is up and running
 
     $ kubectl get pods -n kube-system
 
-You should now see the tiller pod in a running status
+> You should now see the tiller pod in a running status
 
 | NAME                           | READY | STATUS  | RESTARTS | AGE |
 | ------------------------------ | ----- | ------- | -------- | --- |
@@ -245,6 +198,15 @@ The first step is to create a manifest file which will be used for the load bala
     $ kubectl create namespace ingress-demo
     namespace/ingress-demo created
 
+## Generate certificate the ingress controller
+Use this [guide](https://github.com/wallenc/deployAKS/blob/master/Guides/Generate%20Certificate%20Requests%20for%20Helm%2C%20Tiller%2C%20and%20the%20Ingress%20Controller.md) to generate the certificate requests and export with a private key
+
+Once the certificate has been created, copy it to a directory on your Linux host.
+
+Convert the root certifcate to PEM format
+    
+    $ openssl x509 -inform der -in rootCA.cer -out rootCA.crt
+
 #### Create a Kubernetes secret to add the certificate to the namespace
 
     $ kubectl create secret tls azure-demo-secret \
@@ -253,19 +215,14 @@ The first step is to create a manifest file which will be used for the load bala
         --cert ~/demo.azure.com.crt
     secret/aks-ingress-tls created
 
-Deploy the ingress controller
+## Deploy the ingress controller
 
 Now deploy the nginx-ingress chart with Helm. To use the manifest file created in the previous step, we need to add the `-f internal-loadbalancer.yml` parameter. If this parameter isn't specified, the load balancer will be created with a public IP. For added redundancy, two replicas of the NGINX ingress controllers are deployed with the `--set controller.replicaCount` parameter. To fully benefit from running replicas of the ingress controller, make sure there's more than one node in your AKS cluster.
-
-The ingress controller also needs to be scheduled on a Linux node. Windows Server nodes (currently in preview in AKS) shouldn't run the ingress controller. A node selector is specified using the `--set nodeSelector` parameter to tell the Kubernetes scheduler to run the NGINX ingress controller on a Linux-based node. Also, the `--tls` parameter must be added as Helm/Tiller are now configured to use TLS authentication.
 
     $ helm install --name demo stable/nginx-ingress \
         --namespace ingress-demo \
         -f internal-loadbalancer.yml \
-        --set controller.replicaCount=2 \
-        --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux \
-        --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux \
-        --tls
+        --set controller.replicaCount=2
 
 Verify that the ingress services are running. I've added the ``--watch`` parameter to monitor the namespace for any changes as it may take a few minutes for the loadbalancer resource to initialize and acquire the IP address specified in the internal-loadbalancer.yml manifest.
 
@@ -339,11 +296,11 @@ The following steps are for Ubuntu. Please see the instructions for adding a new
 
 Modify /etc/ca-certificates.conf to include a reference to your new certificate.
 
-    $ sudo echo rootCA.crt >> /etc/ca-certificates.conf
+    $ sudo sed -i "\$arootCA.crt" /etc/ca-certificates.conf
 
 Update CA certificates
 
-    $ update-ca-certificates
+    $ sudo update-ca-certificates
 
 > You should see the following output
 
@@ -363,7 +320,8 @@ Add the following line
 Save and close the file
 
 Test the application
-curl -v https://demo.azure.com
+    
+    $ curl -v https://demo.azure.com
 
 ### In the output, you should see the server certificate returned
 
