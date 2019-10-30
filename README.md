@@ -4,6 +4,8 @@ This article walks through the deployment of an NGINX ingress controller with SS
 
 ### At a high level this guide walks through the following
 
+- Creating a Service Principal
+- Deploying an AKS cluster
 - Installing and configuring Helm and Tiller
 - Creating an internal load balancer
 - Creating the ingress controller using private IPs and SSL termination
