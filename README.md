@@ -4,9 +4,7 @@ This article walks through the deployment of an NGINX ingress controller with SS
 
 ### At a high level this guide walks through the following
 
-- Creating a service principal with a limited scope
-- Deploying AKS using an already existing VNET/subnet
-- Securing Helm and Tiller with Windows CA issued certificates
+- Installing and configuring Helm and Tiller
 - Creating an internal load balancer
 - Creating the ingress controller using private IPs and SSL termination
 - Deploying a demo application
@@ -15,7 +13,9 @@ This article walks through the deployment of an NGINX ingress controller with SS
 - Testing the demo application using curl with certificate validation
 
 # Prerequisites
-[Azure CLI for Linux](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest)
+- [Azure CLI for Linux or Windows Subsystem for Linx](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest)
+- Service Principal
+- Existing AKS Cluster
 
 # Create a service principal
 An Azure service principal is an identity created for use with applications, hosted services, and automated tools to access Azure resources. This access is restricted by the roles assigned to the service principal, giving you control over which resources can be accessed and at which level. For security reasons, it's always recommended to use service principals with automated tools rather than allowing them to log in with a user identity.
