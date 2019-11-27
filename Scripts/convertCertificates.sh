@@ -70,9 +70,9 @@ do
         subjName=$(echo $pfxName | cut -f 1 -d '.')
 
         echo  $certName
-        openssl pkcs12 -clcerts -nokeys -in $pfxfile -out "${outPath}/${subjName}.crt" -password pass:Password1 -passin pass:Password1
-        openssl pkcs12 -nocerts -in $pfxfile -out "${outPath}/${subjName}.key" -password pass:Password1 -passin pass:Password1 -passout pass:Password1
-        openssl rsa -in "${outPath}/${subjName}.key" -out "${outPath}/${subjName}.nopass.key" -passin pass:Password1
+        openssl pkcs12 -clcerts -nokeys -in $pfxfile -out "${outPath}/${subjName}.crt" -password pass:"${pfxPass}" -passin pass:"${pfxPass}"
+        openssl pkcs12 -nocerts -in $pfxfile -out "${outPath}/${subjName}.key" -password pass:"${pfxPass}" -passin pass:"${pfxPass}" -passout pass:"${pfxPass}"
+        openssl rsa -in "${outPath}/${subjName}.key" -out "${outPath}/${subjName}.nopass.key" -passin pass:"${pfxPass}"
 
         printf "%s\n\n" "Certificate and keyi files for ${subjName} were written to ${outPath}"
 
