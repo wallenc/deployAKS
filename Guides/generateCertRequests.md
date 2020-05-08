@@ -1,4 +1,4 @@
-# Generate the certificates for Helm, Tiller, and the ingress controller
+# Generate the certificates for the ingress controller
 The steps below will guide you through the process of requesting certificates for Helm, Tiller, and the ingress controller from a Windows CA. These steps should be performed on a Windows server that is located in the same domain as your Certificate Authority.
 
 There are two options for requesting and then exporting the certificates:
