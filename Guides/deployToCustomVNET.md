@@ -35,7 +35,7 @@ The following steps walk through the process of creating the AKS cluster and con
 
 In the below examples, replace the parameters with values that suit your environment. Using the default settings for the network configuration creates a subnet with a /8 CIDR range. As this may be too large for your environment or overlap with an existing VNET, you can configure the cluster to use an already existing subnet. This example shows that configuration. If you would like to use the default settings, simply leave off the `--vnet-subnet-id parameter`. The Service Principal and Client Secret parameters should match the appId and password from the output of the sp create command above.
 
-    az aks create --resource-group AKS-DEMO-RG --name demoAKSCluster --service-principal "b2abba9c-ef9a-4a0e-8d8b-46d8b53d046b" --client-secret "2a30869c-388e-40cf-8f5f-8d99fea405bf" --vnet-subnet-id "/subscriptions/061f5e92-edf2-4389-8357-a16f71a2cbf3/resourceGroups/AKS-VNET-RG/providers/Microsoft.Network/virtualNetworks/AKS-DEMO-VNET/subnets/S-1" --generate-ssh-keys
+    az aks create --resource-group AKS-DEMO-RG --name demoAKSCluster --service-principal "b2abba9c-ef9a-4a0e-8d8b-46d8b53d046b" --client-secret "2a30869c-388e-40cf-8f5f-8d99fea405bf" --vnet-subnet-id "/subscriptions/061f5e92-edf2-4389-8357-a16f71a2cbf3/resourceGroups/AKS-VNET-RG/providers/Microsoft.Network/virtualNetworks/AKS-DEMO-VNET/subnets/S-1" --pod-cidr 172.16.0.0/16 --network-plugin kubenet --generate-ssh-keys
 
 When the above command completes, you should see output that resembles the following
 
@@ -87,7 +87,7 @@ When the above command completes, you should see output that resembles the follo
         "loadBalancerSku": "Basic",
         "networkPlugin": "kubenet",
         "networkPolicy": null,
-        "podCidr": "10.244.0.0/16",
+        "podCidr": "172.16.0.0/16",
         "serviceCidr": "10.0.0.0/16"
     },
     "nodeResourceGroup": "MC_AKS-DEMO-RG_demoAKSCluster_usgovvirginia",
