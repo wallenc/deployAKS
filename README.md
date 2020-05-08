@@ -145,45 +145,6 @@ The output should resemble the following:
 ## Install and configure Helm
 Use the installation guide from [Helm](https://helm.sh/docs/using_helm/#installing-helm)   
 
->NOTE: You may need to add the path to the Helm binary to your PATH before you're able to use Helm
-
-    $ PATH="/usr/local/bin/helm:$PATH"
-
-Configure Helm and Tiller
-
-    $ helm init --service-account tiller-sa
-    $ kubectl create serviceaccount --namespace kube-system tiller-sa
-    $ kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller-sa
-
-If you want to take an additional step and secure Helm and Tiller with TLS certificates, please see this [guide](https://github.com/wallenc/deployAKS/blob/master/Guides/Generate%20Certificate%20Requests%20for%20Helm%2C%20Tiller%2C%20and%20the%20Ingress%20Controller.md)
-
-Now make sure the Tiller pod is up and running
-
-    $ kubectl get pods -n kube-system
-
-> You should now see the tiller pod in a running status
-
-| NAME                           | READY | STATUS  | RESTARTS | AGE |
-| ------------------------------ | ----- | ------- | -------- | --- |
-| tiller-deploy-69775bbbc7-c42wp | 1/1   | Running | 0        | 5m  |
-
-  
-#### Configure TLS for the Helm client
-
-Copy the Helm certificate and key to ~/.helm
-
-    $ cp helm.crt ~/.helm/cert.pem
-    $ cp helm.nopass.key ~/.helm/key.pem
-
-Test the Helm connectivity to Tiller using the `--tls` flag
-  
-    $ helm version --tls
-
-If TLS has been configured properly, you should see the following output
-  
-    Client: &version.Version{SemVer:"v2.10.0", GitCommit:"9ad53aac42165a5fadc6c87be0dea6b115f93090", GitTreeState:"clean"}
-    Server: &version.Version{SemVer:"v2.10.0", GitCommit:"9ad53aac42165a5fadc6c87be0dea6b115f93090", GitTreeState:"clean"}
-
 ## Create the ingress controller
 
 In this step, we'll deploy the ingress controller using an internal load balancer. This will not create any public endpoints and will only provide access to the ingress resource from the internal private network.
